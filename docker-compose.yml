@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+      container_name: investment-backend
+          build:
+                context: ./backend
+                      dockerfile: Dockerfile
+                          ports:
+                                - "3001:3001"
+                                    environment:
+                                          - NODE_ENV=development
+                                                - SUPABASE_URL=${SUPABASE_URL}
+                                                      - SUPABASE_KEY=${SUPABASE_KEY}
+                                                            - PORT=3001
+                                                                volumes:
+                                                                      - ./backend/src:/app/src
+                                                                          command: npm run dev
+                                                                              networks:
+                                                                                    - investment-network
+
+                                                                                      frontend:
+                                                                                          container_name: investment-frontend
+                                                                                              build:
+                                                                                                    context: ./frontend
+                                                                                                          dockerfile: Dockerfile
+                                                                                                              ports:
+                                                                                                                    - "3000:3000"
+                                                                                                                        environment:
+                                                                                                                              - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+                                                                                                                                    - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_KEY}
+                                                                                                                                          - NEXT_PUBLIC_API_URL=http://backend:3001
+                                                                                                                                              volumes:
+                                                                                                                                                    - ./frontend/src:/app/src
+                                                                                                                                                        depends_on:
+                                                                                                                                                              - backend
+                                                                                                                                                                  networks:
+                                                                                                                                                                        - investment-network
+                                                                                                                                                                        
+                                                                                                                                                                        networks:
+                                                                                                                                                                          investment-network:
+                                                                                                                                                                              driver: bridge
